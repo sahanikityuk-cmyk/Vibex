@@ -1,0 +1,2093 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibex - Ванильный Minecraft сервер</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="img/icon.png">
+    <link rel="apple-touch-icon" href="img/icon.png">
+    <meta name="theme-color" content="#4a1d96">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        purple: {
+                            900: '#4a1d96',
+                            800: '#5b21b6',
+                            700: '#7c3aed',
+                            600: '#9333ea',
+                        },
+                        pink: {
+                            600: '#ec4899',
+                            500: '#f472b6',
+                            400: '#f9a8d4',
+                        },
+                        gold: {
+                            500: '#f59e0b',
+                            400: '#fbbf24',
+                            300: '#fcd34d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
+        body { font-family: 'Montserrat', sans-serif; background: linear-gradient(135deg, #1a0b2e 0%, #0f061d 100%); color: #e2e8f0; min-height: 100vh; }
+        .minecraft-font { font-family: 'Roboto Mono', monospace; }
+        .glow { text-shadow: 0 0 10px rgba(147, 51, 234, 0.7); }
+        .card-glow { box-shadow: 0 0 15px rgba(147, 51, 234, 0.3); }
+        .hover-glow:hover { box-shadow: 0 0 20px rgba(236, 72, 153, 0.5); transform: translateY(-5px); }
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(147, 51, 234, 0); } 100% { box-shadow: 0 0 0 0 rgba(147, 51, 234, 0); } }
+        .minecraft-button { background: linear-gradient(to bottom, #9333ea, #7c3aed); border: 2px solid #5b21b6; box-shadow: 0 4px 0 #4a1d96; transition: all 0.2s; }
+        .minecraft-button:hover { background: linear-gradient(to bottom, #7c3aed, #5b21b6); transform: translateY(2px); box-shadow: 0 2px 0 #4a1d96; }
+        .minecraft-button:active { transform: translateY(4px); box-shadow: none; }
+        .privilege-card { background: linear-gradient(145deg, #1a0b2e, #2d1b4d); border: 1px solid #5b21b6; }
+        .review-card { background: rgba(45, 27, 77, 0.6); border-left: 3px solid #ec4899; }
+        .profile-avatar { border: 3px solid #f59e0b; box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); }
+        .nav-link { position: relative; padding: 0.5rem 1rem; }
+        .nav-link::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 3px; background: #f59e0b; transition: all 0.3s ease; transform: translateX(-50%); }
+        .nav-link:hover::after { width: 80%; }
+        .active::after { width: 80% !important; }
+        .server-status { display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 600; }
+        .status-online { background-color: rgba(72, 187, 120, 0.2); color: #34d399; }
+        .status-offline { background-color: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 0.5rem; }
+        .dot-online { background-color: #34d399; box-shadow: 0 0 10px #34d399; }
+        .dot-offline { background-color: #ef4444; box-shadow: 0 0 10px #ef4444; }
+        .screenshot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
+        .screenshot-item { border-radius: 0.5rem; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); transition: all 0.3s ease; }
+        .screenshot-item:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4); }
+        .wiki-card { background: rgba(45, 27, 77, 0.6); border-radius: 0.75rem; transition: all 0.3s ease; }
+        .wiki-card:hover { background: rgba(77, 39, 128, 0.7); transform: translateY(-3px); }
+    </style>
+    <style>
+        body.light-mode { background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%); color: #1E293B; transition: all 0.3s ease; }
+        body.light-mode .glow { text-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
+        body.light-mode .card-glow { box-shadow: 0 0 15px rgba(139, 92, 246, 0.1); }
+        body.light-mode .hover-glow:hover { box-shadow: 0 0 20px rgba(236, 72, 153, 0.2); transform: translateY(-5px); }
+        body.light-mode .bg-purple-900 { background: #ffffff !important; border-color: #E2E8F0 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        body.light-mode .nav-link { color: #4B5563; }
+        body.light-mode .minecraft-button { background: linear-gradient(to bottom, #8B5CF6, #7C3AED); border: 2px solid #6D28D9; box-shadow: 0 4px 0 #5B21B6; color: #fff; }
+        body.light-mode .minecraft-button:hover { background: linear-gradient(to bottom, #7C3AED, #6D28D9); color: #fff; }
+        body.light-mode .privilege-card { background: #ffffff; border: 1px solid #E2E8F0; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        body.light-mode .review-card { background: #ffffff; border-left: 3px solid #EC4899; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        body.light-mode .wiki-card { background: #ffffff; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        body.light-mode .screenshot-item { background: #ffffff; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        body.light-mode .server-status { background: #ffffff; color: #10B981; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        body.light-mode .status-online { color: #10B981; }
+        body.light-mode .status-offline { color: #EF4444; }
+        body.light-mode .dot-online { background-color: #10B981; box-shadow: 0 0 10px rgba(16,185,129,0.3); }
+        body.light-mode .dot-offline { background-color: #EF4444; box-shadow: 0 0 10px rgba(239,68,68,0.3); }
+        body.light-mode #profile-page .bg-purple-800 { background: #ffffff; border: 1px solid #E2E8F0; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        body.light-mode #profile-page .bg-purple-900 { background: #F8FAFC; }
+        body.light-mode .modal-content { background: #ffffff; color: #1E293B; }
+        body.light-mode .modal-input { background: #F8FAFC; border: 1px solid #E2E8F0; color: #1E293B; }
+        body.light-mode footer { background: #ffffff; border-top: 1px solid #E2E8F0; box-shadow: 0 -4px 6px rgba(0,0,0,0.05); }
+    </style>
+    
+</head>
+<body class="min-h-screen">
+    <!-- Верхняя плашка навигации -->
+    <div class="bg-purple-900 border-b border-purple-700 sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center py-3">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <div class="text-2xl font-bold text-pink-500 glow">Vibex</div>
+                    <div class="ml-4 flex items-center">
+                        <span id="server-status-badge" class="server-status status-online">
+                            <span id="server-status-dot" class="status-dot dot-online"></span>
+                            <span id="server-status-label">Онлайн:</span>
+                            <span id="server-online-count">42</span>/<span id="server-max-count">100</span>
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="flex flex-wrap justify-center gap-1">
+                    <a href="#" class="nav-link text-white hover:text-pink-400 active">Главная</a>
+                    <a href="#" class="nav-link text-white hover:text-pink-400">Профиль</a>
+                    <a href="#" class="nav-link text-white hover:text-pink-400">Скриншоты</a>
+                    <a href="#" class="nav-link text-white hover:text-pink-400">Вики</a>
+                    
+                    <a href="#" id="admin-nav" class="nav-link text-white hover:text-pink-400 hidden">Админ</a>
+                </div>
+                
+                <div class="mt-4 md:mt-0 flex items-center gap-2">
+                    <button id="theme-toggle" class="bg-transparent border-2 border-pink-500 text-pink-500 font-bold py-2 px-4 rounded-lg hover:bg-pink-500 hover:text-white transition">
+                        Тема
+                    </button>
+                    <button id="admin-auth-btn" class="bg-transparent border-2 border-gold-500 text-gold-500 font-bold py-2 px-4 rounded-lg hover:bg-gold-500 hover:text-white transition hidden">
+                        Админ вход
+                    </button>
+                    <button id="login-btn" class="minecraft-button text-white font-bold py-2 px-4 rounded-lg flex items-center">
+                        <i class="fas fa-user mr-2"></i>
+                        Войти
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Универсальное модальное окно ввода -->
+    <div id="input-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-purple-900 rounded-xl p-8 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="input-modal-title" class="text-2xl font-bold">Ввод</h3>
+                <button id="input-modal-close" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <input id="input-modal-input" type="text" class="w-full bg-purple-800 border border-purple-700 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-pink-500" placeholder="Введите значение">
+                </div>
+                <div class="flex gap-3">
+                    <button id="input-modal-cancel" class="bg-purple-700 hover:bg-purple-600 text-white py-2 px-4 rounded-lg w-1/2">Отменить</button>
+                    <button id="input-modal-ok" class="minecraft-button py-2 px-4 rounded-lg w-1/2 font-bold">ОК</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Админ страница -->
+    <div id="admin-page" class="container mx-auto px-4 py-8 hidden">
+        <h2 class="text-3xl font-bold mb-6">Админ панель</h2>
+        <div id="admin-guard" class="bg-purple-800 bg-opacity-50 rounded-xl p-6 mb-6 hidden">
+            <p>Доступ запрещен. Войдите как администратор.</p>
+        </div>
+        <div id="admin-content" class="space-y-8 hidden">
+            <div class="bg-purple-800 bg-opacity-50 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-4">Пользователи</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="text-gray-300">
+                            <tr>
+                                <th class="py-2 pr-4">Юзернейм</th>
+                                <th class="py-2 pr-4">Email</th>
+                                <th class="py-2 pr-4">Баны</th>
+                                <th class="py-2 pr-4">Предупреждения</th>
+                                <th class="py-2">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-users-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-purple-800 bg-opacity-50 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-4">Отзывы</h3>
+                <div id="admin-reviews-list" class="space-y-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка админ входа -->
+    <div id="admin-auth-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-purple-900 rounded-xl p-8 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">Админ вход</h3>
+                <button id="close-admin-auth" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-300 mb-2">Админ ключ</label>
+                    <input id="admin-key-input" type="password" class="w-full bg-purple-800 border border-purple-700 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-pink-500" placeholder="Введите секретный ключ">
+                    <p id="admin-key-error" class="text-red-400 text-sm mt-2 hidden">Неверный ключ</p>
+                </div>
+                <button id="admin-auth-submit" class="minecraft-button w-full py-3 rounded-lg font-bold">Войти как админ</button>
+            </div>
+        </div>
+    </div>
+    
+    
+    <!-- Главная страница -->
+    <div id="home-page" class="container mx-auto px-4 py-8">
+        <!-- Герой секция -->
+        <div class="text-center py-12">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6 glow">
+                Добро пожаловать на <span class="text-pink-500">Vibex</span>
+            </h1>
+            <p class="text-xl max-w-2xl mx-auto mb-8">
+                Ванилла+ Minecraft сервер с самописными плагинами. Играйте в уютном Minecraft с другими игроками!
+            </p>
+            <div class="flex justify-center">
+                <button id="apply-btn" class="minecraft-button text-white font-bold py-3 px-8 rounded-lg text-lg">
+                    <i class="fas fa-paper-plane mr-2"></i>
+                    Подать заявку
+                </button>
+            </div>
+        </div>
+
+        <!-- Преимущества сервера -->
+        <div class="py-12">
+            <h2 class="text-3xl font-bold text-center mb-12">Почему выбирают <span class="text-pink-500">Vibex</span>?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-purple-800 bg-opacity-50 p-6 rounded-xl card-glow">
+                    <div class="text-pink-500 text-4xl mb-4">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Безопасность</h3>
+                    <p>Мы обеспечиваем защиту от читеров и хакеров, чтобы ваш игровой процесс был честным.</p>
+                </div>
+                
+                <div class="bg-purple-800 bg-opacity-50 p-6 rounded-xl card-glow">
+                    <div class="text-pink-500 text-4xl mb-4">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Дружное сообщество</h3>
+                    <p>Присоединяйтесь к активному сообществу игроков, готовых помочь новичкам.</p>
+                </div>
+                
+                <div class="bg-purple-800 bg-opacity-50 p-6 rounded-xl card-glow">
+                    <div class="text-pink-500 text-4xl mb-4">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Постоянные обновления</h3>
+                    <p>Сервер всегда обновляется до последней версии Minecraft для лучшего опыта.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Привилегии (заменено на В разработке) -->
+        <div class="py-12">
+            <h2 class="text-3xl font-bold text-center mb-12">Магазин привилегий</h2>
+            <div class="text-center text-gray-400">В разработке</div>
+        </div>
+
+        <!-- Отзывы -->
+        <div class="py-12">
+            <h2 class="text-3xl font-bold text-center mb-12">Отзывы игроков</h2>
+            <div id="reviews-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            
+            <div class="mt-8 text-center">
+                <button id="add-review-btn" class="minecraft-button py-3 px-8 rounded-lg font-bold">
+                    <i class="fas fa-plus mr-2"></i>
+                    Оставить отзыв
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Форма входа -->
+    <div id="login-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-purple-900 rounded-xl p-8 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="auth-modal-title" class="text-2xl font-bold">Вход в аккаунт</h3>
+                <button id="close-login" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <button id="login-google" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center">
+                    <i class="fab fa-google mr-2"></i>
+                    Войти через Google
+                </button>
+                
+                <button id="login-yandex" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center">
+                    <i class="fab fa-yandex mr-2"></i>
+                    Войти через Яндекс
+                </button>
+                
+                <div class="relative my-6">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-600"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-purple-900 text-gray-400">или</span>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-300 mb-2">Юзернейм</label>
+                    <input id="login-username" type="text" class="w-full bg-purple-800 border border-purple-700 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-pink-500" placeholder="Введите юзернейм">
+                    <p id="login-username-error" class="text-red-400 text-sm mt-2 hidden">не верный узернейм</p>
+                </div>
+                
+                <div id="login-email-group" class="hidden">
+                    <label class="block text-gray-300 mb-2">Email</label>
+                    <input id="login-email" type="email" class="w-full bg-purple-800 border border-purple-700 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-pink-500" placeholder="Введите email для регистрации">
+                </div>
+                
+                <div>
+                    <label class="block text-gray-300 mb-2">Пароль</label>
+                    <input id="login-password" type="password" class="w-full bg-purple-800 border border-purple-700 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-pink-500" placeholder="Введите пароль">
+                    <p id="login-password-error" class="text-red-400 text-sm mt-2 hidden">пароль не верный</p>
+                </div>
+                
+                <button id="login-submit" class="minecraft-button w-full py-3 rounded-lg font-bold mt-4">Войти</button>
+                
+                <div class="text-center mt-4 text-sm text-gray-300">
+                    <span id="auth-toggle-text">Нет аккаунта?</span>
+                    <button id="toggle-auth-mode" class="text-pink-500 hover:text-pink-400 font-semibold">Зарегистрироваться</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно отзыва -->
+    <div id="review-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-purple-900 rounded-xl p-8 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">Оставить отзыв</h3>
+                <button id="close-review" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-300 mb-2">Оценка</label>
+                    <select id="review-rating" class="w-full bg-purple-800 border border-purple-700 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        <option value="5">5 - Отлично</option>
+                        <option value="4">4 - Хорошо</option>
+                        <option value="3">3 - Нормально</option>
+                        <option value="2">2 - Плохо</option>
+                        <option value="1">1 - Ужасно</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-2">Ваш отзыв</label>
+                    <textarea id="review-text" rows="4" class="w-full bg-purple-800 border border-purple-700 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-pink-500" placeholder="Напишите, что вам понравилось на сервере..."></textarea>
+                </div>
+                <button id="submit-review" class="minecraft-button w-full py-3 rounded-lg font-bold">Отправить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Профиль -->
+    <div id="profile-page" class="container mx-auto px-4 py-8 hidden">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold mb-8">Профиль игрока</h2>
+            <div id="profile-empty" class="bg-purple-800 bg-opacity-50 rounded-xl p-6 mb-8 hidden">
+                <p class="mb-4">У вас нету профиля, зарегистрируйтесь или войдите.</p>
+                <button id="open-login-from-profile" class="minecraft-button py-2 px-4 rounded-lg font-bold">Войти/Зарегистрироваться</button>
+            </div>
+            <div id="profile-content">
+            
+            <div class="bg-purple-800 bg-opacity-50 rounded-xl p-6 mb-8">
+                <div class="flex flex-col md:flex-row items-center">
+                    
+                    <div class="mb-6 md:mb-0 md:mr-8">
+                        <div id="profile-avatar" class="w-32 h-32 rounded-full bg-purple-700 flex items-center justify-center text-pink-500 text-5xl font-bold profile-avatar relative overflow-hidden">
+                            <img id="profile-avatar-img" class="w-32 h-32 rounded-full object-cover hidden" src="" alt="Аватар">
+                            <div id="profile-avatar-letter" class="absolute inset-0 flex items-center justify-center text-pink-500 text-5xl font-bold">И</div>
+                        </div>
+                        <input id="avatar-input" type="file" accept="image/*" class="hidden">
+                        <button id="change-avatar-btn" class="mt-4 w-full bg-purple-700 hover:bg-purple-600 text-white py-2 px-4 rounded-lg">
+                            Изменить аватар
+                        </button>
+                    </div>
+                    
+                    <div class="flex-1 w-full">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-gray-400 mb-2">Имя пользователя</label>
+                                <input id="profile-username" type="text" value="IvanMinecraft" class="w-full bg-purple-900 border border-purple-700 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-400 mb-2">Email</label>
+                                <input id="profile-email" type="email" value="ivan@example.com" class="w-full bg-purple-900 border border-purple-700 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-400 mb-2">Текущий никнейм в Minecraft</label>
+                                <input id="minecraft-nickname" type="text" value="IvanGamer" class="w-full bg-purple-900 border border-purple-700 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-400 mb-2">Новый никнейм</label>
+                                <input id="new-nickname" type="text" placeholder="Введите новый никнейм" class="w-full bg-purple-900 border border-purple-700 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                            </div>
+                        </div>
+                        
+                        <button id="save-profile-btn" class="minecraft-button mt-6 py-3 px-8 rounded-lg font-bold">
+                            Сохранить изменения
+                        </button>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="bg-purple-800 bg-opacity-50 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-4">Мои привилегии</h3>
+                <div class="text-gray-400">В разработке</div>
+                    </div>
+                    
+            <div class="bg-purple-800 bg-opacity-50 rounded-xl p-6 mt-6" id="customization-panel">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold">Кастомизация профиля</h3>
+                    <button id="customization-toggle" class="text-pink-400 hover:text-pink-300">Свернуть</button>
+                </div>
+                <div id="customization-content" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                        <h4 class="font-semibold mb-2">Фон профиля</h4>
+                        <div class="flex items-center gap-3">
+                            <input id="profile-bg-input" type="file" accept="image/*" class="hidden">
+                            <button id="upload-profile-bg-btn" class="bg-purple-700 hover:bg-purple-600 text-white py-2 px-4 rounded-lg">Выбрать картинку</button>
+                            <button id="clear-profile-bg-btn" class="text-pink-400 hover:text-pink-300">Сбросить</button>
+                        </div>
+                        <div class="mt-3">
+                            <label class="inline-flex items-center gap-2">
+                                <input id="leaf-effect-toggle" type="checkbox" class="form-checkbox">
+                                <span>Эффект: падающие листья</span>
+                            </label>
+                            <div class="mt-2 flex flex-col gap-2">
+                                <label class="inline-flex items-center gap-2">
+                                    <input id="snow-effect-toggle" type="checkbox" class="form-checkbox">
+                                    <span>Эффект: снег</span>
+                                </label>
+                                <label class="inline-flex items-center gap-2">
+                                    <input id="stars-effect-toggle" type="checkbox" class="form-checkbox">
+                                    <span>Эффект: звездное небо</span>
+                                </label>
+                                <label class="inline-flex items-center gap-2">
+                                    <input id="rain-effect-toggle" type="checkbox" class="form-checkbox">
+                                    <span>Эффект: дождь</span>
+                                </label>
+                                <label class="inline-flex items-center gap-2">
+                                    <input id="confetti-effect-toggle" type="checkbox" class="form-checkbox">
+                                    <span>Эффект: конфетти</span>
+                                </label>
+                                <label class="inline-flex items-center gap-2">
+                                    <input id="fireflies-effect-toggle" type="checkbox" class="form-checkbox">
+                                    <span>Эффект: светлячки</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            </div>
+        </div>
+        
+    <!-- Скриншоты -->
+    <div id="screenshots-page" class="container mx-auto px-4 py-8 hidden">
+        <h2 class="text-3xl font-bold mb-8">Скриншоты сервера</h2>
+        <div id="screenshots-grid" class="screenshot-grid"></div>
+        <div class="mt-8">
+            <button id="add-screenshot-btn" class="minecraft-button py-3 px-6 rounded-lg font-bold">
+                <i class="fas fa-image mr-2"></i> Добавить скриншот
+            </button>
+        </div>
+    </div>
+
+    <!-- Вики -->
+    <div id="wiki-page" class="container mx-auto px-4 py-8 hidden">
+        <h2 class="text-3xl font-bold mb-8">Вики сервера Vibex</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="wiki-card p-6">
+                <h3 class="text-xl font-bold mb-3 text-pink-500">Правила сервера</h3>
+                <ul class="space-y-2">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                        <span>Запрещено использование читов и модов</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                        <span>Запрещено строить вредоносные механизмы</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                        <span>Запрещено гриферство и вредительство</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                        <span>Запрещено оскорбление других игроков</span>
+                    </li>
+                </ul>
+                <button class="mt-4 text-pink-500 hover:text-pink-400 font-medium">
+                    Подробнее <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+            
+            <div class="wiki-card p-6">
+                <h3 class="text-xl font-bold mb-3 text-pink-500">Команды сервера</h3>
+                <ul class="space-y-2">
+                    <li class="flex items-start">
+                        <i class="fas fa-terminal text-gold-400 mt-1 mr-2"></i>
+                        <span><span class="text-gold-400">/scale</span> - изменения размера</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-terminal text-gold-400 mt-1 mr-2"></i>
+                        <span><span class="text-gold-400">/</span> </span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-terminal text-gold-400 mt-1 mr-2"></i>
+                        <span><span class="text-gold-400"></span></span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-terminal text-gold-400 mt-1 mr-2"></i>
+                        <span><span class="text-gold-400"></span></span>
+                    </li>
+                </ul>
+                <button class="mt-4 text-pink-500 hover:text-pink-400 font-medium">
+                    Все команды <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+            
+            <div class="wiki-card p-6">
+                <h3 class="text-xl font-bold mb-3 text-pink-500">Экономика сервера</h3>
+                <p class="mb-3">На сервере действует экономическая система. Вы можете зарабатывать деньги различными способами:</p>
+                <ul class="space-y-2">
+                    <li class="flex items-start">
+                        <i class="fas fa-coins text-yellow-400 mt-1 mr-2"></i>
+                        <span>Продажа ресурсов</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-coins text-yellow-400 mt-1 mr-2"></i>
+                        <span>Выполнение заданий</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-coins text-yellow-400 mt-1 mr-2"></i>
+                        <span>Участие в мероприятиях</span>
+                    </li>
+                </ul>
+                <button class="mt-4 text-pink-500 hover:text-pink-400 font-medium">
+                    Подробнее <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+            
+            <div class="wiki-card p-6">
+                <h3 class="text-xl font-bold mb-3 text-pink-500">Постройки сообщества</h3>
+                <p class="mb-3">На сервере есть несколько построек, созданных сообществом:</p>
+                <ul class="space-y-2">
+                    <li class="flex items-start">
+                        <i class="fas fa-landmark text-purple-400 mt-1 mr-2"></i>
+                        <span>Город игроков</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-landmark text-purple-400 mt-1 mr-2"></i>
+                        <span>Фермы ресурсов</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-landmark text-purple-400 mt-1 mr-2"></i>
+                        <span>Магазины игроков</span>
+                    </li>
+                </ul>
+                <button class="mt-4 text-pink-500 hover:text-pink-400 font-medium">
+                    Посмотреть на карте <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Футер -->
+    <footer class="bg-purple-900 border-t border-purple-700 mt-12 py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="text-2xl font-bold text-pink-500 glow">Vibex</div>
+                    <p class="text-gray-400 mt-2">Ванильный Minecraft сервер</p>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-pink-500">
+                        <i class="fab fa-discord text-2xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-pink-500">
+                        <i class="fab fa-youtube text-2xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-pink-500">
+                        <i class="fab fa-vk text-2xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-pink-500">
+                        <i class="fab fa-telegram text-2xl"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-purple-700 mt-8 pt-6 text-center text-gray-500">
+                <p>© 2025 Vibex Minecraft Server. Все права блаблабла.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Навигация между страницами
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pages = ['home-page', 'profile-page', 'screenshots-page', 'wiki-page', 'admin-page'];
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                navLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                
+                pages.forEach(page => {
+                    const el = document.getElementById(page);
+                    if (el) el.classList.add('hidden');
+                });
+                
+                const pageId = this.textContent.trim().toLowerCase();
+                switch(pageId) {
+                    case 'главная':
+                        document.getElementById('home-page').classList.remove('hidden');
+                        break;
+                    case 'профиль':
+                        document.getElementById('profile-page').classList.remove('hidden');
+                        break;
+                    case 'скриншоты':
+                        document.getElementById('screenshots-page').classList.remove('hidden');
+                        break;
+                    case 'вики':
+                        document.getElementById('wiki-page').classList.remove('hidden');
+                        break;
+                    case 'админ':
+                        document.getElementById('admin-page').classList.remove('hidden');
+                        break;
+                    default:
+                        document.getElementById('home-page').classList.remove('hidden');
+                }
+            });
+        });
+        
+        // Модальное окно входа
+        const loginButton = document.getElementById('login-btn');
+        const loginModal = document.getElementById('login-modal');
+        const closeLogin = document.getElementById('close-login');
+        const loginSubmit = document.getElementById('login-submit');
+        const loginUsernameInput = document.getElementById('login-username');
+        const loginUsernameError = document.getElementById('login-username-error');
+        const loginEmailGroup = document.getElementById('login-email-group');
+        const loginEmailInput = document.getElementById('login-email');
+        const loginPasswordInput = document.getElementById('login-password');
+        const loginPasswordError = document.getElementById('login-password-error');
+        const loginGoogle = document.getElementById('login-google');
+        const loginYandex = document.getElementById('login-yandex');
+        const authToggleBtn = document.getElementById('toggle-auth-mode');
+        const authToggleText = document.getElementById('auth-toggle-text');
+        const authModalTitle = document.getElementById('auth-modal-title');
+        let authMode = 'login';
+        
+        // Работа с профилем (localStorage)
+        const getProfile = () => {
+            try { return JSON.parse(localStorage.getItem('userProfile')); } catch { return null; }
+        };
+        const setProfile = (profile) => {
+            localStorage.setItem('userProfile', JSON.stringify(profile));
+        };
+        const clearProfile = () => {
+            localStorage.removeItem('userProfile');
+        };
+        const isLoggedIn = () => !!getProfile();
+        
+        // Пользователи (храним по юзернейму)
+        const getUsers = () => {
+            try { return JSON.parse(localStorage.getItem('usersByUsername')) || {}; } catch { return {}; }
+        };
+        const setUsers = (users) => {
+            localStorage.setItem('usersByUsername', JSON.stringify(users));
+        };
+        
+        const updateLoginButtonUi = () => {
+            if (isLoggedIn()) {
+                loginButton.innerHTML = '<i class="fas fa-sign-out-alt mr-2"></i>Выйти';
+            } else {
+                loginButton.innerHTML = '<i class="fas fa-user mr-2"></i>Войти';
+            }
+        };
+        
+        const ensureProfileViewState = () => {
+            const emptyBlock = document.getElementById('profile-empty');
+            const contentBlock = document.getElementById('profile-content');
+            const warningsBoxId = 'profile-warnings-box';
+            let warningsBox = document.getElementById(warningsBoxId);
+            if (!emptyBlock || !contentBlock) return;
+            if (isLoggedIn()) {
+                emptyBlock.classList.add('hidden');
+                contentBlock.classList.remove('hidden');
+                hydrateProfileForm();
+                // Показ предупреждений в профиле
+                const profile = getProfile();
+                const warnings = (profile && profile.warnings) || [];
+                if (!warningsBox) {
+                    warningsBox = document.createElement('div');
+                    warningsBox.id = warningsBoxId;
+                    warningsBox.className = 'bg-purple-800 bg-opacity-50 rounded-xl p-6 mt-6';
+                    warningsBox.innerHTML = '<h3 class="text-xl font-bold mb-4">Предупреждения</h3><div id="profile-warnings-list" class="space-y-2"></div>';
+                    const container = document.querySelector('#profile-page .max-w-4xl');
+                    if (container) container.appendChild(warningsBox);
+                }
+                const list = document.getElementById('profile-warnings-list');
+                if (list) {
+                    list.innerHTML = '';
+                    warnings.forEach((w, idx) => {
+                        const item = document.createElement('div');
+                        item.className = 'p-3 bg-purple-900 rounded-lg';
+                        item.textContent = `${idx + 1}. ${w.reason} (${w.date || ''})`;
+                        list.appendChild(item);
+                    });
+                    if (warnings.length === 0) {
+                        const item = document.createElement('div');
+                        item.className = 'text-gray-400';
+                        item.textContent = 'Предупреждений нет';
+                        list.appendChild(item);
+                    }
+                }
+            } else {
+                contentBlock.classList.add('hidden');
+                emptyBlock.classList.remove('hidden');
+            }
+        };
+        
+        const getInitialLetter = (name) => {
+            if (!name || !name.trim()) return 'И';
+            return name.trim()[0].toUpperCase();
+        };
+        
+        const hydrateProfileForm = () => {
+            const profile = getProfile();
+            if (!profile) return;
+            const usernameEl = document.getElementById('profile-username');
+            const emailEl = document.getElementById('profile-email');
+            const nickEl = document.getElementById('minecraft-nickname');
+            const newNickEl = document.getElementById('new-nickname');
+            const avatarImg = document.getElementById('profile-avatar-img');
+            const avatarLetter = document.getElementById('profile-avatar-letter');
+            const skinImg = document.getElementById('skin-image-preview');
+            const skinStatus = document.getElementById('skin-status');
+            
+            if (usernameEl) usernameEl.value = profile.username || '';
+            if (emailEl) emailEl.value = profile.email || '';
+            if (nickEl) nickEl.value = profile.minecraftNickname || '';
+            if (newNickEl) newNickEl.value = '';
+            
+            if (profile.avatarDataUrl) {
+                avatarImg.src = profile.avatarDataUrl;
+                avatarImg.classList.remove('hidden');
+                avatarLetter.classList.add('hidden');
+            } else {
+                avatarImg.classList.add('hidden');
+                avatarLetter.textContent = getInitialLetter(profile.username || '');
+                avatarLetter.classList.remove('hidden');
+            }
+
+            // Фон профиля (на самый задний фон сайта)
+            if (profile.profileBackgroundUrl) {
+                document.body.style.backgroundImage = `url(${profile.profileBackgroundUrl})`;
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundPosition = 'center';
+                document.body.style.backgroundRepeat = 'no-repeat';
+            } else {
+                document.body.style.backgroundImage = '';
+            }
+            // Скин
+            if (skinImg && skinStatus) {
+                if (profile.skinImageDataUrl) {
+                    skinImg.src = profile.skinImageDataUrl;
+                    skinImg.classList.remove('hidden');
+                    skinStatus.textContent = `Скин: ${profile.skinModel === 'alex' ? 'Alex (slim)' : 'Steve'}`;
+                } else {
+                    skinImg.classList.add('hidden');
+                    skinStatus.textContent = 'Скин: Steve (по умолчанию)';
+                }
+            }
+        };
+        
+        loginButton.addEventListener('click', function() {
+            if (isLoggedIn()) {
+                // Logout
+                if (confirm('Выйти из профиля?')) {
+                    clearProfile();
+                    updateLoginButtonUi();
+                    ensureProfileViewState();
+                }
+            } else {
+            loginModal.classList.remove('hidden');
+            }
+        });
+        
+        closeLogin.addEventListener('click', function() {
+            loginModal.classList.add('hidden');
+        });
+        
+        window.addEventListener('click', function(e) {
+            if (e.target === loginModal) {
+                loginModal.classList.add('hidden');
+            }
+        });
+        
+        const createOrUpdateUser = ({ username, email, password, minecraftNickname = '', avatarDataUrl = '' }) => {
+            const users = getUsers();
+            users[username] = { username, email, password, minecraftNickname, avatarDataUrl };
+            setUsers(users);
+            setProfile({ username, email, minecraftNickname, avatarDataUrl });
+        };
+        const ensureUserProfileFromUsers = (username) => {
+            const users = getUsers();
+            const user = users[username];
+            if (user) {
+                setProfile({ username: user.username, email: user.email, minecraftNickname: user.minecraftNickname || '', avatarDataUrl: user.avatarDataUrl || '' });
+                return true;
+            }
+            return false;
+        };
+        
+        const clearAuthErrors = () => {
+            if (loginUsernameError) loginUsernameError.classList.add('hidden');
+            if (loginPasswordError) loginPasswordError.classList.add('hidden');
+        };
+        const setUsernameError = (msg = 'не верный узернейм') => {
+            if (!loginUsernameError) return;
+            loginUsernameError.textContent = msg;
+            loginUsernameError.classList.remove('hidden');
+        };
+        const setPasswordError = (msg = 'пароль не верный') => {
+            if (!loginPasswordError) return;
+            loginPasswordError.textContent = msg;
+            loginPasswordError.classList.remove('hidden');
+        };
+        const switchAuthMode = (mode) => {
+            authMode = mode;
+            clearAuthErrors();
+            if (authMode === 'register') {
+                if (authModalTitle) authModalTitle.textContent = 'Регистрация';
+                if (authToggleText) authToggleText.textContent = 'Уже есть аккаунт?';
+                if (authToggleBtn) authToggleBtn.textContent = 'Войти';
+                if (loginEmailGroup) loginEmailGroup.classList.remove('hidden');
+            } else {
+                if (authModalTitle) authModalTitle.textContent = 'Вход в аккаунт';
+                if (authToggleText) authToggleText.textContent = 'Нет аккаунта?';
+                if (authToggleBtn) authToggleBtn.textContent = 'Зарегистрироваться';
+                if (loginEmailGroup) loginEmailGroup.classList.add('hidden');
+            }
+        };
+        if (authToggleBtn) {
+            authToggleBtn.addEventListener('click', function() {
+                switchAuthMode(authMode === 'login' ? 'register' : 'login');
+            });
+        }
+        
+        // Админ доступ (персональные ключи по юзернейму; демо хранение в localStorage)
+        const adminNav = document.getElementById('admin-nav');
+        const adminAuthBtn = document.getElementById('admin-auth-btn');
+        const adminAuthModal = document.getElementById('admin-auth-modal');
+        const closeAdminAuth = document.getElementById('close-admin-auth');
+        const adminKeyInput = document.getElementById('admin-key-input');
+        const adminKeyError = document.getElementById('admin-key-error');
+        const adminAuthSubmit = document.getElementById('admin-auth-submit');
+        const adminGuard = document.getElementById('admin-guard');
+        const adminContent = document.getElementById('admin-content');
+        // (Клиентский демо-вариант, для продакшна подключите серверную проверку)
+        const getAdminKeys = () => {
+            try { return JSON.parse(localStorage.getItem('adminKeysByUsername')) || {}; } catch { return {}; }
+        };
+        const setAdminKeys = (keys) => {
+            localStorage.setItem('adminKeysByUsername', JSON.stringify(keys));
+        };
+        const assignAdminKey = (username, key) => {
+            const map = getAdminKeys();
+            map[username] = key;
+            setAdminKeys(map);
+        };
+        const updateAdminUi = () => {
+            const profile = getProfile();
+            const isAdmin = profile && profile.role === 'admin';
+            if (isAdmin) {
+                adminNav && adminNav.classList.remove('hidden');
+                adminAuthBtn && adminAuthBtn.classList.add('hidden');
+            } else {
+                adminNav && adminNav.classList.add('hidden');
+                adminAuthBtn && adminAuthBtn.classList.remove('hidden');
+            }
+        };
+        const OWNER_USERNAMES = ['viern0x'];
+        const OWNER_ADMIN_KEY = 'viern0x1111tab';
+        const ensureOwnerAdmin = () => {
+            const profile = getProfile();
+            if (!profile) return;
+            if (OWNER_USERNAMES.includes(profile.username)) {
+                if (profile.role !== 'admin') {
+                    profile.role = 'admin';
+                    setProfile(profile);
+                }
+                // Засеять персональный ключ для владельца
+                const keys = getAdminKeys ? getAdminKeys() : {};
+                if (keys) {
+                    keys[profile.username] = OWNER_ADMIN_KEY;
+                    setAdminKeys && setAdminKeys(keys);
+                }
+                updateAdminUi();
+            }
+        };
+        if (adminAuthBtn) {
+            adminAuthBtn.addEventListener('click', function() {
+                adminKeyInput && (adminKeyInput.value = '');
+                adminKeyError && adminKeyError.classList.add('hidden');
+                adminAuthModal && adminAuthModal.classList.remove('hidden');
+            });
+        }
+        if (closeAdminAuth) {
+            closeAdminAuth.addEventListener('click', function() {
+                adminAuthModal && adminAuthModal.classList.add('hidden');
+            });
+        }
+        if (adminAuthSubmit) {
+            adminAuthSubmit.addEventListener('click', function() {
+                const keyVal = (adminKeyInput && adminKeyInput.value || '').trim();
+                const profile = getProfile();
+                if (!profile) { alert('Сначала войдите в аккаунт.'); return; }
+                const keys = getAdminKeys();
+                const expected = keys[profile.username];
+                if (!expected || keyVal !== expected) {
+                    adminKeyError && adminKeyError.classList.remove('hidden');
+                    return;
+                }
+                profile.role = 'admin';
+                setProfile(profile);
+                adminAuthModal && adminAuthModal.classList.add('hidden');
+                updateAdminUi();
+                ensureOwnerAdmin();
+            });
+        }
+        
+        // Темная/светлая тема
+        const themeToggle = document.getElementById('theme-toggle');
+        const THEME_KEY = 'themeMode';
+        const applyTheme = (mode) => {
+            if (mode === 'light') {
+                document.body.classList.add('light-mode');
+                if (themeToggle) themeToggle.textContent = 'Тёмная тема';
+            } else {
+                document.body.classList.remove('light-mode');
+                if (themeToggle) themeToggle.textContent = 'Светлая тема';
+            }
+        };
+        const getTheme = () => localStorage.getItem(THEME_KEY) || 'dark';
+        const setTheme = (mode) => { localStorage.setItem(THEME_KEY, mode); applyTheme(mode); };
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function() {
+                const next = getTheme() === 'dark' ? 'light' : 'dark';
+                setTheme(next);
+            });
+        }
+        
+        if (loginSubmit) {
+            loginSubmit.addEventListener('click', function() {
+                clearAuthErrors();
+                const username = (loginUsernameInput && loginUsernameInput.value || '').trim();
+                const email = (loginEmailInput && loginEmailInput.value || '').trim();
+                const password = (loginPasswordInput && loginPasswordInput.value || '').trim();
+                
+                if (authMode === 'register') {
+                    if (!username) { setUsernameError('не верный узернейм'); return; }
+                    if (!password) { setPasswordError('пароль не верный'); return; }
+                    const users = getUsers();
+                    if (users[username]) { setUsernameError('узернейм уже занят'); return; }
+                    createOrUpdateUser({ username, email, password });
+                    updateLoginButtonUi();
+                    ensureProfileViewState();
+                    loginModal.classList.add('hidden');
+                    ensureOwnerAdmin();
+                    return;
+                }
+                
+                const users = getUsers();
+                const user = users[username];
+                if (!user) { setUsernameError('не верный узернейм'); return; }
+                if (user.password !== password) { setPasswordError('пароль не верный'); return; }
+                ensureUserProfileFromUsers(username);
+                updateLoginButtonUi();
+                ensureProfileViewState();
+                loginModal.classList.add('hidden');
+                ensureOwnerAdmin();
+            });
+        }
+        if (loginGoogle) {
+            loginGoogle.addEventListener('click', function() {
+                const username = 'GoogleUser';
+                const users = getUsers();
+                const password = users[username]?.password || Math.random().toString(36).slice(2);
+                createOrUpdateUser({ username, email: 'google_user@example.com', password });
+                updateLoginButtonUi();
+                ensureProfileViewState();
+                loginModal.classList.add('hidden');
+                ensureOwnerAdmin();
+            });
+        }
+        if (loginYandex) {
+            loginYandex.addEventListener('click', function() {
+                const username = 'YandexUser';
+                const users = getUsers();
+                const password = users[username]?.password || Math.random().toString(36).slice(2);
+                createOrUpdateUser({ username, email: 'yandex_user@yandex.ru', password });
+                updateLoginButtonUi();
+                ensureProfileViewState();
+                loginModal.classList.add('hidden');
+                ensureOwnerAdmin();
+            });
+        }
+
+        // Синхронизация онлайна сервера
+        const statusBadge = document.getElementById('server-status-badge');
+        const statusDot = document.getElementById('server-status-dot');
+        const statusLabel = document.getElementById('server-status-label');
+        const onlineCountEl = document.getElementById('server-online-count');
+        const maxCountEl = document.getElementById('server-max-count');
+        const setServerOnlineUi = (online, max) => {
+            if (statusBadge) { statusBadge.classList.remove('status-offline'); statusBadge.classList.add('status-online'); }
+            if (statusDot) { statusDot.classList.remove('dot-offline'); statusDot.classList.add('dot-online'); }
+            if (statusLabel) { statusLabel.textContent = 'Онлайн:'; }
+            if (onlineCountEl) onlineCountEl.textContent = String(online ?? 0);
+            if (maxCountEl) maxCountEl.textContent = String(max ?? 0);
+        };
+        const setServerOfflineUi = () => {
+            if (statusBadge) { statusBadge.classList.remove('status-online'); statusBadge.classList.add('status-offline'); }
+            if (statusDot) { statusDot.classList.remove('dot-online'); statusDot.classList.add('dot-offline'); }
+            if (statusLabel) { statusLabel.textContent = 'Оффлайн'; }
+            if (onlineCountEl) onlineCountEl.textContent = '0';
+            if (maxCountEl) maxCountEl.textContent = '0';
+        };
+        async function fetchServerStatus() {
+            try {
+                const res = await fetch('https://api.mcsrvstat.us/3/proxima.minerent.net:25571', { cache: 'no-store' });
+                const data = await res.json();
+                if (data && data.online) {
+                    const online = (data.players && data.players.online) || 0;
+                    const max = (data.players && data.players.max) || 0;
+                    setServerOnlineUi(online, max);
+                } else {
+                    setServerOfflineUi();
+                }
+            } catch (e) {
+                setServerOfflineUi();
+            }
+        }
+        
+        // Профиль: изменение аватара и сохранение
+        const changeAvatarBtn = document.getElementById('change-avatar-btn');
+        const avatarInput = document.getElementById('avatar-input');
+        if (changeAvatarBtn && avatarInput) {
+            changeAvatarBtn.addEventListener('click', function() {
+                if (!isLoggedIn()) {
+                    alert('У вас нету профиля, зарегистрируйтесь или войдите.');
+                    return;
+                }
+                avatarInput.click();
+            });
+            avatarInput.addEventListener('change', function(e) {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const dataUrl = evt.target && evt.target.result;
+                    const profile = getProfile();
+                    if (!profile) return;
+                    profile.avatarDataUrl = dataUrl;
+                    setProfile(profile);
+                    hydrateProfileForm();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        const saveProfileBtn = document.getElementById('save-profile-btn');
+        if (saveProfileBtn) {
+            saveProfileBtn.addEventListener('click', function() {
+                if (!isLoggedIn()) {
+                    alert('У вас нету профиля, зарегистрируйтесь или войдите.');
+                    return;
+                }
+                const profile = getProfile() || {};
+                const usernameEl = document.getElementById('profile-username');
+                const emailEl = document.getElementById('profile-email');
+                const nickEl = document.getElementById('minecraft-nickname');
+                const newNickEl = document.getElementById('new-nickname');
+                
+                profile.username = (usernameEl && usernameEl.value) || profile.username || '';
+                profile.email = (emailEl && emailEl.value) || profile.email || '';
+                profile.minecraftNickname = (newNickEl && newNickEl.value) ? newNickEl.value : ((nickEl && nickEl.value) || profile.minecraftNickname || '');
+                setProfile(profile);
+                hydrateProfileForm();
+                alert('Профиль сохранен');
+            });
+        }
+        // Фон профиля / скин / эффекты
+        const uploadProfileBgBtn = document.getElementById('upload-profile-bg-btn');
+        const clearProfileBgBtn = document.getElementById('clear-profile-bg-btn');
+        const profileBgInput = document.getElementById('profile-bg-input');
+        if (uploadProfileBgBtn && profileBgInput) {
+            uploadProfileBgBtn.addEventListener('click', function() { if (!isLoggedIn()) return alert('Сначала войдите.'); profileBgInput.click(); });
+            profileBgInput.addEventListener('change', function(e) {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const profile = getProfile() || {};
+                    profile.profileBackgroundUrl = evt.target && evt.target.result;
+                    setProfile(profile);
+                    hydrateProfileForm();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        if (clearProfileBgBtn) {
+            clearProfileBgBtn.addEventListener('click', function() {
+                const profile = getProfile() || {};
+                delete profile.profileBackgroundUrl;
+                setProfile(profile);
+                hydrateProfileForm();
+            });
+        }
+        const leafEffectToggle = document.getElementById('leaf-effect-toggle');
+        const snowEffectToggle = document.getElementById('snow-effect-toggle');
+        const starsEffectToggle = document.getElementById('stars-effect-toggle');
+        const rainEffectToggle = document.getElementById('rain-effect-toggle');
+        const confettiEffectToggle = document.getElementById('confetti-effect-toggle');
+        const firefliesEffectToggle = document.getElementById('fireflies-effect-toggle');
+        
+        const ensureLeafEffect = () => {
+            let canvas = document.getElementById('leaf-canvas');
+            const profile = getProfile();
+            const enabled = profile && profile.leafEffectEnabled;
+            if (enabled) {
+                if (!canvas) {
+                    canvas = document.createElement('canvas');
+                    canvas.id = 'leaf-canvas';
+                    canvas.style.position = 'fixed';
+                    canvas.style.pointerEvents = 'none';
+                    canvas.style.left = '0';
+                    canvas.style.top = '0';
+                    canvas.style.width = '100%';
+                    canvas.style.height = '100%';
+                    canvas.style.zIndex = '10';
+                    document.body.appendChild(canvas);
+                    startLeafAnimation(canvas);
+                }
+            } else if (canvas) {
+                canvas.remove();
+            }
+        };
+        if (leafEffectToggle) {
+            leafEffectToggle.addEventListener('change', function() {
+                const profile = getProfile() || {};
+                profile.leafEffectEnabled = !!leafEffectToggle.checked;
+                setProfile(profile);
+                ensureLeafEffect();
+            });
+        }
+        const ensureSnowEffect = () => {
+            let canvas = document.getElementById('snow-canvas');
+            const profile = getProfile();
+            const enabled = profile && profile.snowEffectEnabled;
+            if (enabled) {
+                if (!canvas) {
+                    canvas = document.createElement('canvas');
+                    canvas.id = 'snow-canvas';
+                    canvas.style.position = 'fixed';
+                    canvas.style.pointerEvents = 'none';
+                    canvas.style.left = '0';
+                    canvas.style.top = '0';
+                    canvas.style.width = '100%';
+                    canvas.style.height = '100%';
+                    canvas.style.zIndex = '9';
+                    document.body.appendChild(canvas);
+                    startSnowAnimation(canvas);
+                }
+            } else if (canvas) { canvas.remove(); }
+        };
+        if (snowEffectToggle) {
+            snowEffectToggle.addEventListener('change', function() {
+                const profile = getProfile() || {};
+                profile.snowEffectEnabled = !!snowEffectToggle.checked;
+                setProfile(profile);
+                ensureSnowEffect();
+            });
+        }
+        const ensureStarsEffect = () => {
+            let canvas = document.getElementById('stars-canvas');
+            const profile = getProfile();
+            const enabled = profile && profile.starsEffectEnabled;
+            if (enabled) {
+                if (!canvas) {
+                    canvas = document.createElement('canvas');
+                    canvas.id = 'stars-canvas';
+                    canvas.style.position = 'fixed';
+                    canvas.style.pointerEvents = 'none';
+                    canvas.style.left = '0';
+                    canvas.style.top = '0';
+                    canvas.style.width = '100%';
+                    canvas.style.height = '100%';
+                    canvas.style.zIndex = '8';
+                    document.body.appendChild(canvas);
+                    startStarsAnimation(canvas);
+                }
+            } else if (canvas) { canvas.remove(); }
+        };
+        const ensureRainEffect = () => {
+            let canvas = document.getElementById('rain-canvas');
+            const profile = getProfile();
+            const enabled = profile && profile.rainEffectEnabled;
+            if (enabled) {
+                if (!canvas) {
+                    canvas = document.createElement('canvas');
+                    canvas.id = 'rain-canvas';
+                    Object.assign(canvas.style, { position: 'fixed', pointerEvents: 'none', left: '0', top: '0', width: '100%', height: '100%', zIndex: '7' });
+                    document.body.appendChild(canvas);
+                    startRainAnimation(canvas);
+                }
+            } else if (canvas) { canvas.remove(); }
+        };
+        const ensureConfettiEffect = () => {
+            let canvas = document.getElementById('confetti-canvas');
+            const profile = getProfile();
+            const enabled = profile && profile.confettiEffectEnabled;
+            if (enabled) {
+                if (!canvas) {
+                    canvas = document.createElement('canvas');
+                    canvas.id = 'confetti-canvas';
+                    Object.assign(canvas.style, { position: 'fixed', pointerEvents: 'none', left: '0', top: '0', width: '100%', height: '100%', zIndex: '7' });
+                    document.body.appendChild(canvas);
+                    startConfettiAnimation(canvas);
+                }
+            } else if (canvas) { canvas.remove(); }
+        };
+        const ensureFirefliesEffect = () => {
+            let canvas = document.getElementById('fireflies-canvas');
+            const profile = getProfile();
+            const enabled = profile && profile.firefliesEffectEnabled;
+            if (enabled) {
+                if (!canvas) {
+                    canvas = document.createElement('canvas');
+                    canvas.id = 'fireflies-canvas';
+                    Object.assign(canvas.style, { position: 'fixed', pointerEvents: 'none', left: '0', top: '0', width: '100%', height: '100%', zIndex: '7' });
+                    document.body.appendChild(canvas);
+                    startFirefliesAnimation(canvas);
+                }
+            } else if (canvas) { canvas.remove(); }
+        };
+        const ensureAuroraEffect = () => {
+            let canvas = document.getElementById('aurora-canvas');
+            const profile = getProfile();
+            const enabled = profile && profile.auroraEffectEnabled;
+            if (enabled) {
+                if (!canvas) {
+                    canvas = document.createElement('canvas');
+                    canvas.id = 'aurora-canvas';
+                    Object.assign(canvas.style, { position: 'fixed', pointerEvents: 'none', left: '0', top: '0', width: '100%', height: '100%', zIndex: '6' });
+                    document.body.appendChild(canvas);
+                    startAuroraAnimation(canvas);
+                }
+            } else if (canvas) { canvas.remove(); }
+        };
+        const ensureBokehEffect = () => {
+            let canvas = document.getElementById('bokeh-canvas');
+            const profile = getProfile();
+            const enabled = profile && profile.bokehEffectEnabled;
+            if (enabled) {
+                if (!canvas) {
+                    canvas = document.createElement('canvas');
+                    canvas.id = 'bokeh-canvas';
+                    Object.assign(canvas.style, { position: 'fixed', pointerEvents: 'none', left: '0', top: '0', width: '100%', height: '100%', zIndex: '6' });
+                    document.body.appendChild(canvas);
+                    startBokehAnimation(canvas);
+                }
+            } else if (canvas) { canvas.remove(); }
+        };
+        const ensureVortexEffect = () => {
+            let canvas = document.getElementById('vortex-canvas');
+            const profile = getProfile();
+            const enabled = profile && profile.vortexEffectEnabled;
+            if (enabled) {
+                if (!canvas) {
+                    canvas = document.createElement('canvas');
+                    canvas.id = 'vortex-canvas';
+                    Object.assign(canvas.style, { position: 'fixed', pointerEvents: 'none', left: '0', top: '0', width: '100%', height: '100%', zIndex: '6' });
+                    document.body.appendChild(canvas);
+                    startVortexAnimation(canvas);
+                }
+            } else if (canvas) { canvas.remove(); }
+        };
+        if (starsEffectToggle) {
+            starsEffectToggle.addEventListener('change', function() {
+                const profile = getProfile() || {};
+                profile.starsEffectEnabled = !!starsEffectToggle.checked;
+                setProfile(profile);
+                ensureStarsEffect();
+            });
+        }
+        if (rainEffectToggle) {
+            rainEffectToggle.addEventListener('change', function() {
+                const profile = getProfile() || {};
+                profile.rainEffectEnabled = !!rainEffectToggle.checked;
+                setProfile(profile);
+                ensureRainEffect();
+            });
+        }
+        if (confettiEffectToggle) {
+            confettiEffectToggle.addEventListener('change', function() {
+                const profile = getProfile() || {};
+                profile.confettiEffectEnabled = !!confettiEffectToggle.checked;
+                setProfile(profile);
+                ensureConfettiEffect();
+            });
+        }
+        if (firefliesEffectToggle) {
+            firefliesEffectToggle.addEventListener('change', function() {
+                const profile = getProfile() || {};
+                profile.firefliesEffectEnabled = !!firefliesEffectToggle.checked;
+                setProfile(profile);
+                ensureFirefliesEffect();
+            });
+        }
+        
+        // Рамки аватарки
+        const avatarFrameInputs = document.querySelectorAll('input[name="avatar-frame"]');
+        avatarFrameInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                const profile = getProfile() || {};
+                profile.avatarFrame = this.value;
+                setProfile(profile);
+                applyAvatarFrame(this.value);
+            });
+        });
+        
+        function applyAvatarFrame(frameType) {
+            const avatarContainer = document.getElementById('profile-avatar');
+            const avatarImg = document.getElementById('profile-avatar-img');
+            const avatarLetter = document.getElementById('profile-avatar-letter');
+            
+            if (!avatarContainer) return;
+            
+            // Убираем все предыдущие классы рамок
+            avatarContainer.className = 'w-32 h-32 rounded-full bg-purple-700 flex items-center justify-center text-pink-500 text-5xl font-bold profile-avatar relative overflow-hidden';
+            
+            // Применяем выбранную рамку
+            switch(frameType) {
+                case 'neon-punk':
+                    avatarContainer.classList.add('p-1', 'bg-gradient-to-br', 'from-purple-900', 'via-pink-800', 'to-purple-900');
+                    avatarContainer.innerHTML = `
+                        <div class="w-full h-full rounded-full bg-black flex items-center justify-center text-pink-400 text-5xl font-bold relative">
+                            <div class="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 opacity-20 blur-sm"></div>
+                            <div class="absolute inset-0 rounded-full border border-pink-400 shadow-lg shadow-pink-400/50"></div>
+                            ${avatarImg && !avatarImg.classList.contains('hidden') ? `<img src="${avatarImg.src}" class="w-full h-full rounded-full object-cover relative z-10">` : `<span class="relative z-10">${avatarLetter ? avatarLetter.textContent : 'И'}</span>`}
+                        </div>
+                    `;
+                    break;
+                case 'cyber-goth':
+                    avatarContainer.classList.add('p-1', 'bg-gradient-to-br', 'from-green-900', 'via-black', 'to-purple-900');
+                    avatarContainer.innerHTML = `
+                        <div class="w-full h-full rounded-full bg-black flex items-center justify-center text-green-400 text-5xl font-bold relative">
+                            <div class="absolute inset-0 rounded-full bg-gradient-to-r from-green-400 to-purple-400 opacity-30 blur-sm"></div>
+                            <div class="absolute inset-0 rounded-full border-2 border-green-400 shadow-lg shadow-green-400/50"></div>
+                            <div class="absolute -top-1 -right-1 w-3 h-3 bg-pink-400 rounded-full shadow-lg shadow-pink-400/50"></div>
+                            <div class="absolute -bottom-1 -left-1 w-2 h-2 bg-purple-400 rounded-full shadow-lg shadow-purple-400/50"></div>
+                            ${avatarImg && !avatarImg.classList.contains('hidden') ? `<img src="${avatarImg.src}" class="w-full h-full rounded-full object-cover relative z-10">` : `<span class="relative z-10">${avatarLetter ? avatarLetter.textContent : 'И'}</span>`}
+                        </div>
+                    `;
+                    break;
+                case 'emo-scene':
+                    avatarContainer.classList.add('p-1', 'bg-gradient-to-br', 'from-pink-900', 'via-purple-800', 'to-blue-900');
+                    avatarContainer.innerHTML = `
+                        <div class="w-full h-full rounded-full bg-black flex items-center justify-center text-pink-400 text-5xl font-bold relative">
+                            <div class="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 opacity-25 blur-sm"></div>
+                            <div class="absolute inset-0 rounded-full border border-pink-400 shadow-lg shadow-pink-400/40"></div>
+                            <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-yellow-400 rounded-full shadow-lg shadow-yellow-400/50"></div>
+                            <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-blue-400 rounded-full shadow-lg shadow-blue-400/50"></div>
+                            ${avatarImg && !avatarImg.classList.contains('hidden') ? `<img src="${avatarImg.src}" class="w-full h-full rounded-full object-cover relative z-10">` : `<span class="relative z-10">${avatarLetter ? avatarLetter.textContent : 'И'}</span>`}
+                        </div>
+                    `;
+                    break;
+                case 'kawaii-dark':
+                    avatarContainer.classList.add('p-1', 'bg-gradient-to-br', 'from-pink-800', 'via-purple-700', 'to-red-800');
+                    avatarContainer.innerHTML = `
+                        <div class="w-full h-full rounded-full bg-black flex items-center justify-center text-pink-300 text-5xl font-bold relative">
+                            <div class="absolute inset-0 rounded-full bg-gradient-to-r from-pink-300 to-red-300 opacity-20 blur-sm"></div>
+                            <div class="absolute inset-0 rounded-full border-2 border-pink-300 shadow-lg shadow-pink-300/40"></div>
+                            <div class="absolute -top-1 -left-1 w-3 h-3 bg-red-400 rounded-full shadow-lg shadow-red-400/50"></div>
+                            <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-purple-400 rounded-full shadow-lg shadow-purple-400/50"></div>
+                            <div class="absolute top-1/2 -right-2 w-1 h-1 bg-yellow-400 rounded-full shadow-lg shadow-yellow-400/50"></div>
+                            ${avatarImg && !avatarImg.classList.contains('hidden') ? `<img src="${avatarImg.src}" class="w-full h-full rounded-full object-cover relative z-10">` : `<span class="relative z-10">${avatarLetter ? avatarLetter.textContent : 'И'}</span>`}
+                        </div>
+                    `;
+                    break;
+                case 'vaporwave':
+                    avatarContainer.classList.add('p-1', 'bg-gradient-to-br', 'from-pink-600', 'via-purple-500', 'to-cyan-500');
+                    avatarContainer.innerHTML = `
+                        <div class="w-full h-full rounded-full bg-black flex items-center justify-center text-cyan-300 text-5xl font-bold relative">
+                            <div class="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 opacity-30 blur-sm"></div>
+                            <div class="absolute inset-0 rounded-full border border-cyan-400 shadow-lg shadow-cyan-400/50"></div>
+                            <div class="absolute top-0 left-0 w-2 h-2 bg-pink-400 rounded-full shadow-lg shadow-pink-400/50"></div>
+                            <div class="absolute bottom-0 right-0 w-2 h-2 bg-purple-400 rounded-full shadow-lg shadow-purple-400/50"></div>
+                            <div class="absolute top-1/2 left-0 w-1 h-1 bg-cyan-400 rounded-full shadow-lg shadow-cyan-400/50"></div>
+                            <div class="absolute top-1/2 right-0 w-1 h-1 bg-pink-400 rounded-full shadow-lg shadow-pink-400/50"></div>
+                            ${avatarImg && !avatarImg.classList.contains('hidden') ? `<img src="${avatarImg.src}" class="w-full h-full rounded-full object-cover relative z-10">` : `<span class="relative z-10">${avatarLetter ? avatarLetter.textContent : 'И'}</span>`}
+                        </div>
+                    `;
+                    break;
+                default: // none
+                    // Восстанавливаем оригинальную структуру
+                    if (avatarImg && !avatarImg.classList.contains('hidden')) {
+                        avatarContainer.innerHTML = `<img src="${avatarImg.src}" class="w-32 h-32 rounded-full object-cover">`;
+                    } else {
+                        avatarContainer.innerHTML = `<div id="profile-avatar-letter" class="absolute inset-0 flex items-center justify-center text-pink-500 text-5xl font-bold">${avatarLetter ? avatarLetter.textContent : 'И'}</div>`;
+                    }
+                    break;
+            }
+        }
+        
+        function startLeafAnimation(canvas) {
+            const ctx = canvas.getContext('2d');
+            function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+            resize();
+            window.addEventListener('resize', resize);
+            const leaves = Array.from({ length: 30 }).map(() => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * -canvas.height,
+                r: 6 + Math.random() * 10,
+                s: 0.5 + Math.random() * 1.5,
+                a: Math.random() * Math.PI * 2
+            }));
+            function step() {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                leaves.forEach(l => {
+                    l.y += l.s;
+                    l.x += Math.sin(l.a) * 0.5;
+                    l.a += 0.02;
+                    if (l.y - l.r > canvas.height) { l.y = -l.r; l.x = Math.random() * canvas.width; }
+                    ctx.fillStyle = 'rgba(34,197,94,0.7)';
+                    ctx.beginPath();
+                    ctx.ellipse(l.x, l.y, l.r, l.r * 0.6, l.a, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                requestAnimationFrame(step);
+            }
+            step();
+        }
+        function startSnowAnimation(canvas) {
+            const ctx = canvas.getContext('2d');
+            function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+            resize();
+            addEventListener('resize', resize);
+            const flakes = Array.from({ length: 80 }).map(() => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * -canvas.height,
+                r: 1 + Math.random() * 3,
+                s: 0.5 + Math.random() * 1.2
+            }));
+            function step() {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                ctx.fillStyle = 'rgba(255,255,255,0.9)';
+                flakes.forEach(f => {
+                    f.y += f.s; f.x += Math.sin(f.y * 0.01) * 0.3;
+                    if (f.y > canvas.height) { f.y = -f.r; f.x = Math.random() * canvas.width; }
+                    ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2); ctx.fill();
+                });
+                requestAnimationFrame(step);
+            }
+            step();
+        }
+        function startStarsAnimation(canvas) {
+            const ctx = canvas.getContext('2d');
+            function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+            resize();
+            addEventListener('resize', resize);
+            const stars = Array.from({ length: 120 }).map(() => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 1.2,
+                a: Math.random() * Math.PI * 2
+            }));
+            function step() {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                stars.forEach(s => {
+                    s.a += 0.02;
+                    const alpha = 0.3 + 0.7 * (0.5 + Math.sin(s.a) / 2);
+                    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+                    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
+                });
+                requestAnimationFrame(step);
+            }
+            step();
+        }
+        function startRainAnimation(canvas) {
+            const ctx = canvas.getContext('2d');
+            function resize() { canvas.width = innerWidth; canvas.height = innerHeight; } resize(); addEventListener('resize', resize);
+            const drops = Array.from({ length: 120 }).map(() => ({ x: Math.random()*canvas.width, y: Math.random()*-canvas.height, l: 10+Math.random()*20, s: 3+Math.random()*4 }));
+            function step() {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                ctx.strokeStyle = 'rgba(59,130,246,0.6)'; ctx.lineWidth = 1;
+                drops.forEach(d => { d.y += d.s; if (d.y > canvas.height) { d.y = -d.l; d.x = Math.random()*canvas.width; } ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d.x, d.y+d.l); ctx.stroke(); });
+                requestAnimationFrame(step);
+            } step();
+        }
+        function startConfettiAnimation(canvas) {
+            const ctx = canvas.getContext('2d');
+            function resize() { canvas.width = innerWidth; canvas.height = innerHeight; } resize(); addEventListener('resize', resize);
+            const pieces = Array.from({ length: 80 }).map(() => ({ x: Math.random()*canvas.width, y: Math.random()*-canvas.height, s: 2+Math.random()*3, a: Math.random()*Math.PI*2, c: `hsl(${Math.floor(Math.random()*360)},80%,60%)` }));
+            function step() {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                pieces.forEach(p => { p.y += p.s; p.x += Math.sin(p.a)*0.5; p.a += 0.1; if (p.y>canvas.height) { p.y=-5; p.x=Math.random()*canvas.width; } ctx.fillStyle=p.c; ctx.fillRect(p.x, p.y, 5, 8); });
+                requestAnimationFrame(step);
+            } step();
+        }
+        function startFirefliesAnimation(canvas) {
+            const ctx = canvas.getContext('2d');
+            function resize() { canvas.width = innerWidth; canvas.height = innerHeight; } resize(); addEventListener('resize', resize);
+            const bugs = Array.from({ length: 25 }).map(() => ({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, a: Math.random()*Math.PI*2 }));
+            function step() {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                bugs.forEach(b => { b.x += Math.cos(b.a)*0.7; b.y += Math.sin(b.a)*0.7; b.a += (Math.random()-0.5)*0.2; if (b.x<0) b.x=canvas.width; if (b.x>canvas.width) b.x=0; if (b.y<0) b.y=canvas.height; if (b.y>canvas.height) b.y=0; ctx.fillStyle='rgba(250,204,21,0.8)'; ctx.beginPath(); ctx.arc(b.x,b.y,2.2,0,Math.PI*2); ctx.fill(); });
+                requestAnimationFrame(step);
+            } step();
+        }
+        function startAuroraAnimation(canvas) {
+            const ctx = canvas.getContext('2d');
+            function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; } resize(); addEventListener('resize', resize);
+            let t = 0;
+            function noise(x, y){ return (Math.sin(x*0.02 + t)*Math.cos(y*0.02 - t) + 2)/4; }
+            function step(){
+                t += 0.01;
+                const w = canvas.width, h = canvas.height;
+                const g = ctx.createLinearGradient(0, 0, 0, h);
+                g.addColorStop(0, 'rgba(59,130,246,0.08)');
+                g.addColorStop(1, 'rgba(16,185,129,0.08)');
+                ctx.fillStyle = 'rgba(0,0,0,0.05)';
+                ctx.fillRect(0,0,w,h);
+                ctx.globalCompositeOperation = 'lighter';
+                for (let y=0; y<h; y+=6){
+                    ctx.fillStyle = `hsla(${160+noise(0,y)*80}, 80%, 60%, 0.12)`;
+                    const amp = 30 + noise(0,y)*60;
+                    ctx.fillRect(0, y, w, 2);
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    for (let x=0; x<w; x+=12){
+                        const ny = y + Math.sin((x*0.01)+t*2 + y*0.02)*amp;
+                        ctx.lineTo(x, ny);
+                    }
+                    ctx.strokeStyle = `hsla(${160+noise(0,y)*80}, 80%, 60%, 0.15)`;
+                    ctx.stroke();
+                }
+                ctx.globalCompositeOperation = 'source-over';
+                requestAnimationFrame(step);
+            } step();
+        }
+        function startBokehAnimation(canvas) {
+            const ctx = canvas.getContext('2d');
+            function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; } resize(); addEventListener('resize', resize);
+            const dots = Array.from({ length: 40 }).map(()=>({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: 8+Math.random()*18, a: Math.random()*Math.PI*2, s: 0.2+Math.random()*0.6 }));
+            function step(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                dots.forEach(d=>{ d.x += Math.cos(d.a)*d.s; d.y += Math.sin(d.a)*d.s; d.a += (Math.random()-0.5)*0.02; if(d.x<-50) d.x=canvas.width+50; if(d.x>canvas.width+50) d.x=-50; if(d.y<-50) d.y=canvas.height+50; if(d.y>canvas.height+50) d.y=-50; const grad = ctx.createRadialGradient(d.x,d.y,0,d.x,d.y,d.r); grad.addColorStop(0,'rgba(255,255,255,0.15)'); grad.addColorStop(1,'rgba(255,255,255,0)'); ctx.fillStyle=grad; ctx.beginPath(); ctx.arc(d.x,d.y,d.r,0,Math.PI*2); ctx.fill(); });
+                requestAnimationFrame(step);
+            } step();
+        }
+        function startVortexAnimation(canvas) {
+            const ctx = canvas.getContext('2d');
+            function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; } resize(); addEventListener('resize', resize);
+            const parts = Array.from({ length: 120 }).map(()=>({ r: Math.random()*Math.min(canvas.width, canvas.height)/2, a: Math.random()*Math.PI*2, s: 0.01+Math.random()*0.02 }));
+            function step(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                ctx.translate(canvas.width/2, canvas.height/2);
+                parts.forEach(p=>{ p.a += p.s; const x = Math.cos(p.a)*p.r; const y = Math.sin(p.a)*p.r; ctx.fillStyle='rgba(236,72,153,0.25)'; ctx.fillRect(x,y,2,2); p.r *= 0.999; if (p.r < 5) p.r = Math.min(canvas.width, canvas.height)/2; });
+                ctx.setTransform(1,0,0,1,0,0);
+                requestAnimationFrame(step);
+            } step();
+        }
+        
+
+        // Свернуть/развернуть кастомизацию
+        const customizationToggle = document.getElementById('customization-toggle');
+        const customizationContent = document.getElementById('customization-content');
+        if (customizationToggle && customizationContent) {
+            customizationToggle.addEventListener('click', function(){
+                customizationContent.classList.toggle('hidden');
+                customizationToggle.textContent = customizationContent.classList.contains('hidden') ? 'Развернуть' : 'Свернуть';
+            });
+        }
+        const openLoginFromProfile = document.getElementById('open-login-from-profile');
+        if (openLoginFromProfile) {
+            openLoginFromProfile.addEventListener('click', function() {
+                loginModal.classList.remove('hidden');
+            });
+        }
+        
+        // Отзывы: модалка и сохранение
+        const addReviewBtn = document.getElementById('add-review-btn');
+        const reviewModal = document.getElementById('review-modal');
+        const closeReview = document.getElementById('close-review');
+        const submitReview = document.getElementById('submit-review');
+        const reviewText = document.getElementById('review-text');
+        const reviewRating = document.getElementById('review-rating');
+        const reviewsGrid = document.getElementById('reviews-grid');
+        
+        const getReviews = () => {
+            try { return JSON.parse(localStorage.getItem('reviews')) || []; } catch { return []; }
+        };
+        const setReviews = (reviews) => {
+            localStorage.setItem('reviews', JSON.stringify(reviews));
+        };
+        
+        // Универсальная модалка ввода вместо prompt()
+        function showInputModal(title, placeholder, defaultValue) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('input-modal');
+                const titleEl = document.getElementById('input-modal-title');
+                const inputEl = document.getElementById('input-modal-input');
+                const btnOk = document.getElementById('input-modal-ok');
+                const btnCancel = document.getElementById('input-modal-cancel');
+                const btnClose = document.getElementById('input-modal-close');
+
+                if (!modal || !titleEl || !inputEl || !btnOk || !btnCancel || !btnClose) {
+                    // Fallback на prompt, если что-то не найдено
+                    resolve(window.prompt(title || 'Ввод', defaultValue || ''));
+                    return;
+                }
+
+                titleEl.textContent = title || 'Ввод';
+                inputEl.placeholder = placeholder || '';
+                inputEl.value = defaultValue != null ? String(defaultValue) : '';
+                modal.classList.remove('hidden');
+                setTimeout(() => inputEl.focus(), 0);
+
+                let resolved = false;
+                const cleanup = () => {
+                    document.removeEventListener('keydown', onKey);
+                    btnOk.removeEventListener('click', onOk);
+                    btnCancel.removeEventListener('click', onCancel);
+                    btnClose.removeEventListener('click', onCancel);
+                    modal.removeEventListener('click', onOverlay);
+                };
+                const close = () => { modal.classList.add('hidden'); };
+                const onOk = () => { if (resolved) return; resolved = true; const v = inputEl.value; cleanup(); close(); resolve(v); };
+                const onCancel = () => { if (resolved) return; resolved = true; cleanup(); close(); resolve(null); };
+                const onKey = (e) => { if (e.key === 'Enter') onOk(); if (e.key === 'Escape') onCancel(); };
+                const onOverlay = (e) => { if (e.target === modal) onCancel(); };
+
+                document.addEventListener('keydown', onKey);
+                btnOk.addEventListener('click', onOk);
+                btnCancel.addEventListener('click', onCancel);
+                btnClose.addEventListener('click', onCancel);
+                modal.addEventListener('click', onOverlay);
+            });
+        }
+        
+        // Админ: пользователи/отзывы списки
+        const hydrateAdminUsers = () => {
+            const tbody = document.getElementById('admin-users-body');
+            if (!tbody) return;
+            const users = getUsers();
+            tbody.innerHTML = '';
+            Object.values(users).forEach((u) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="py-2 pr-4">${u.username}</td>
+                    <td class="py-2 pr-4">${u.email || ''}</td>
+                    <td class="py-2 pr-4"><span class="inline-block px-2 py-1 rounded bg-purple-900">${u.banned ? 'Забанен' : '-'}</span></td>
+                    <td class="py-2 pr-4">${(u.warnings || []).length}</td>
+                    <td class="py-2">
+                        <button class="text-red-400 hover:text-red-300 mr-2" data-action="ban" data-user="${u.username}">${u.banned ? 'Разбанить' : 'Забанить'}</button>
+                        <button class="text-blue-400 hover:text-blue-300 mr-2" data-action="grant-admin" data-user="${u.username}">Выдать ключ</button>
+                        <button class="text-yellow-400 hover:text-yellow-300 mr-2" data-action="warn" data-user="${u.username}">Предупредить</button>
+                        <button class="text-pink-400 hover:text-pink-300" data-action="remove-warns" data-user="${u.username}">Снять все предупреждения</button>
+                    </td>`;
+                tbody.appendChild(tr);
+            });
+            tbody.onclick = async (e) => {
+                const el = e.target;
+                if (!(el instanceof Element)) return;
+                const action = el.getAttribute('data-action');
+                const username = el.getAttribute('data-user');
+                if (!action || !username) return;
+                const users = getUsers();
+                const user = users[username];
+                if (!user) return;
+                if (action === 'ban') {
+                    user.banned = !user.banned;
+                }
+                if (action === 'grant-admin') {
+                    const key = await showInputModal('Персональный ключ', 'Введите персональный ключ для пользователя');
+                    if (key) {
+                        const map = getAdminKeys();
+                        map[username] = key;
+                        setAdminKeys(map);
+                        alert('Ключ выдан. Теперь пользователь сможет войти в админ панель, введя этот ключ.');
+                    }
+                }
+                if (action === 'warn') {
+                    const reason = await showInputModal('Причина предупреждения', 'Причина предупреждения');
+                    if (reason) {
+                        user.warnings = user.warnings || [];
+                        user.warnings.push({ reason, date: new Date().toLocaleString() });
+                        // если предупреждаем текущего профиля — синхронизируем
+                        const profile = getProfile();
+                        if (profile && profile.username === username) {
+                            profile.warnings = user.warnings;
+                            setProfile(profile);
+                            ensureProfileViewState();
+                        }
+                    }
+                }
+                if (action === 'remove-warns') {
+                    user.warnings = [];
+                    const profile = getProfile();
+                    if (profile && profile.username === username) {
+                        profile.warnings = [];
+                        setProfile(profile);
+                        ensureProfileViewState();
+                    }
+                }
+                setUsers(users);
+                hydrateAdminUsers();
+            };
+        };
+        const hydrateAdminReviews = () => {
+            const container = document.getElementById('admin-reviews-list');
+            if (!container) return;
+            const reviews = getReviews();
+            container.innerHTML = '';
+            reviews.forEach((r) => {
+                const row = document.createElement('div');
+                row.className = 'p-3 bg-purple-900 rounded-lg flex items-center gap-3';
+                row.innerHTML = `
+                    <span class="text-sm text-gray-300">${r.authorName}</span>
+                    <span class="text-sm text-gray-500">${(r.text || '').slice(0,60)}</span>
+                    <div class="ml-auto space-x-2">
+                        <button class="text-yellow-400 hover:text-yellow-300" data-action="edit" data-id="${r.id}">Изменить</button>
+                        <button class="text-red-400 hover:text-red-300" data-action="delete" data-id="${r.id}">Удалить</button>
+                    </div>`;
+                container.appendChild(row);
+            });
+            container.onclick = async (e) => {
+                const el = e.target;
+                if (!(el instanceof Element)) return;
+                const action = el.getAttribute('data-action');
+                const id = el.getAttribute('data-id');
+                if (!action || !id) return;
+                let list = getReviews();
+                const idx = list.findIndex(rr => String(rr.id) === String(id));
+                if (idx === -1) return;
+                if (action === 'delete') {
+                    list.splice(idx, 1);
+                    setReviews(list);
+                    hydrateAdminReviews();
+                    // удалить и с витрины, если есть
+                    const card = document.querySelector(`[data-review-id="${id}"]`);
+                    if (card) card.remove();
+                    return;
+                }
+                if (action === 'edit') {
+                    const updated = await showInputModal('Изменить отзыв', 'Введите текст отзыва', list[idx].text);
+                    if (updated == null) return;
+                    list[idx].text = updated;
+                    setReviews(list);
+                    hydrateAdminReviews();
+                    // обновить и на витрине
+                    const card = document.querySelector(`[data-review-id="${id}"]`);
+                    if (card) {
+                        const p = card.querySelector('p');
+                        if (p) p.textContent = updated;
+                    }
+                }
+            };
+        };
+        const renderStars = (rating) => {
+            let stars = '';
+            for (let i = 0; i < 5; i++) {
+                stars += i < rating ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
+            }
+            return stars;
+        };
+        
+        // Скриншоты: хранение и отрисовка
+        const screenshotsGrid = document.getElementById('screenshots-grid');
+        const addScreenshotBtn = document.getElementById('add-screenshot-btn');
+        const getScreenshots = () => { try { return JSON.parse(localStorage.getItem('screenshots')) || []; } catch { return []; } };
+        const setScreenshots = (items) => { localStorage.setItem('screenshots', JSON.stringify(items)); };
+        const appendScreenshotCard = (item) => {
+            if (!screenshotsGrid) return;
+            const canManage = isLoggedIn() && getProfile() && (getProfile().username === item.authorUsername || (getProfile().role === 'admin'));
+            const html = `
+                <div class="screenshot-item" data-shot-id="${item.id}">
+                    <img src="${item.imageDataUrl}" alt="Скриншот" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-bold">${item.title || 'Скриншот'}</h3>
+                        <p class="text-sm text-gray-400">Автор: ${item.authorName || 'Игрок'}</p>
+                        ${canManage ? '<div class="mt-2 space-x-3 text-sm">\n                            <button class="text-yellow-400 hover:text-yellow-300 shot-edit">Изменить</button>\n                            <button class="text-red-400 hover:text-red-300 shot-delete">Удалить</button>\n                        </div>' : ''}
+                    </div>
+                </div>`;
+            screenshotsGrid.insertAdjacentHTML('afterbegin', html);
+        };
+        const hydrateScreenshots = () => {
+            if (!screenshotsGrid) return;
+            screenshotsGrid.innerHTML = '';
+            const items = getScreenshots();
+            items.forEach(appendScreenshotCard);
+        };
+        if (addScreenshotBtn) {
+            addScreenshotBtn.addEventListener('click', function() {
+                if (!isLoggedIn()) { alert('У вас нету профиля, зарегистрируйтесь или войдите.'); return; }
+                const profile = getProfile();
+                if (profile && profile.banned) { alert('Ваш аккаунт забанен.'); return; }
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.accept = 'image/*';
+                fileInput.onchange = (e) => {
+                    const file = e.target.files && e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = async (evt) => {
+                        const dataUrl = evt.target && evt.target.result;
+                        const title = (await showInputModal('Название скриншота', 'Введите название', 'Мой скриншот')) || 'Скриншот';
+                        const items = getScreenshots();
+                        const newItem = {
+                            id: Date.now(),
+                            title,
+                            imageDataUrl: dataUrl,
+                            authorName: profile.username || profile.email || 'Игрок',
+                            authorUsername: profile.username || ''
+                        };
+                        items.unshift(newItem);
+                        setScreenshots(items);
+                        appendScreenshotCard(newItem);
+                    };
+                    reader.readAsDataURL(file);
+                };
+                fileInput.click();
+            });
+        }
+        if (screenshotsGrid) {
+            screenshotsGrid.addEventListener('click', async function(e) {
+                const el = e.target;
+                if (!(el instanceof Element)) return;
+                const card = el.closest('[data-shot-id]');
+                if (!card) return;
+                const id = card.getAttribute('data-shot-id');
+                if (el.classList.contains('shot-delete')) {
+                    const current = getProfile();
+                    let items = getScreenshots();
+                    const shot = items.find(s => String(s.id) === String(id));
+                    const canDelete = current && (current.username === (shot && shot.authorUsername) || current.role === 'admin');
+                    if (!canDelete) return;
+                    items = items.filter(s => String(s.id) !== String(id));
+                    setScreenshots(items);
+                    card.remove();
+                    return;
+                }
+                if (el.classList.contains('shot-edit')) {
+                    const current = getProfile();
+                    const items = getScreenshots();
+                    const shot = items.find(s => String(s.id) === String(id));
+                    const canEdit = current && (current.username === (shot && shot.authorUsername) || current.role === 'admin');
+                    if (!canEdit || !shot) return;
+                    const newTitle = await showInputModal('Изменить название', 'Введите новое название', shot.title);
+                    if (newTitle == null) return;
+                    shot.title = newTitle;
+                    setScreenshots(items);
+                    const titleEl = card.querySelector('h3');
+                    if (titleEl) titleEl.textContent = newTitle;
+                }
+            });
+        }
+        const appendReviewCard = (review) => {
+            if (!reviewsGrid) return;
+            const letter = review.avatarDataUrl ? '' : getInitialLetter(review.authorName || 'И');
+            const avatarHtml = review.avatarDataUrl
+                ? `<img src="${review.avatarDataUrl}" alt="Аватар" class="w-12 h-12 rounded-full object-cover mr-3 border border-pink-500">`
+                : `<div class="w-12 h-12 rounded-full bg-purple-700 flex items-center justify-center text-pink-500 font-bold mr-3">${letter}</div>`;
+            const when = review.createdAtText || 'только что';
+            const canManage = isLoggedIn() && getProfile() && (getProfile().username === review.authorUsername || (getProfile().role === 'admin'));
+            const html = `
+                <div class="review-card p-6 rounded-xl" data-review-id="${review.id}">
+                    <div class="flex items-center mb-4">
+                        ${avatarHtml}
+                        <div>
+                            <div class="font-bold">${review.authorName || 'Игрок'}</div>
+                            <div class="text-sm text-gray-400">${when}</div>
+                        </div>
+                        ${canManage ? '<div class="ml-auto space-x-2 text-sm">\n                            <button class="text-yellow-400 hover:text-yellow-300 review-edit">Изменить</button>\n                            <button class="text-red-400 hover:text-red-300 review-delete">Удалить</button>\n                        </div>' : ''}
+                    </div>
+                    <p>${review.text}</p>
+                    <div class="flex text-yellow-400 mt-3">${renderStars(review.rating || 5)}</div>
+                </div>`;
+            reviewsGrid.insertAdjacentHTML('beforeend', html);
+        };
+        const hydrateReviews = () => {
+            const list = getReviews();
+            list.forEach(r => appendReviewCard(r));
+            // привяжем события для управления отзывами
+            if (!reviewsGrid) return;
+            reviewsGrid.addEventListener('click', async function(e) {
+                const target = e.target;
+                if (!(target instanceof Element)) return;
+                const card = target.closest('[data-review-id]');
+                if (!card) return;
+                const reviewId = card.getAttribute('data-review-id');
+                if (target.classList.contains('review-delete')) {
+                    const current = getProfile();
+                    let reviews = getReviews();
+                    const review = reviews.find(r => String(r.id) === String(reviewId));
+                    if (!review) return;
+                    const canDelete = current && (current.username === review.authorUsername || current.role === 'admin');
+                    if (!canDelete) return;
+                    reviews = reviews.filter(r => String(r.id) !== String(reviewId));
+                    setReviews(reviews);
+                    card.remove();
+                }
+                if (target.classList.contains('review-edit')) {
+                    const current = getProfile();
+                    const reviews = getReviews();
+                    const review = reviews.find(r => String(r.id) === String(reviewId));
+                    if (!review) return;
+                    const canEdit = current && (current.username === review.authorUsername || current.role === 'admin');
+                    if (!canEdit) return;
+                    const newText = await showInputModal('Изменить отзыв', 'Введите текст отзыва', review.text);
+                    if (newText == null) return;
+                    review.text = newText;
+                    setReviews(reviews);
+                    const p = card.querySelector('p');
+                    if (p) p.textContent = newText;
+                }
+            });
+        };
+        
+        if (addReviewBtn && reviewModal) {
+            addReviewBtn.addEventListener('click', function() {
+                if (!isLoggedIn()) {
+                    alert('У вас нету профиля, зарегистрируйтесь или войдите.');
+                    return;
+                }
+                const currentProfile = getProfile();
+                if (currentProfile && currentProfile.banned) {
+                    alert('Ваш аккаунт забанен. Доступ к отзывам ограничен.');
+                    return;
+                }
+                reviewText.value = '';
+                reviewRating.value = '5';
+                reviewModal.classList.remove('hidden');
+            });
+        }
+        if (closeReview && reviewModal) {
+            closeReview.addEventListener('click', function() {
+                reviewModal.classList.add('hidden');
+            });
+            window.addEventListener('click', function(e) {
+                if (e.target === reviewModal) reviewModal.classList.add('hidden');
+            });
+        }
+        if (submitReview) {
+            submitReview.addEventListener('click', function() {
+                if (!isLoggedIn()) {
+                    alert('У вас нету профиля, зарегистрируйтесь или войдите.');
+                    return;
+                }
+                const currentProfile = getProfile();
+                if (currentProfile && currentProfile.banned) {
+                    alert('Ваш аккаунт забанен. Доступ к отзывам ограничен.');
+                    return;
+                }
+                const txt = (reviewText && reviewText.value || '').trim();
+                const rating = parseInt(reviewRating && reviewRating.value || '5', 10);
+                if (!txt) {
+                    alert('Напишите отзыв.');
+                    return;
+                }
+                const profileData = getProfile();
+                const newReview = {
+                    id: Date.now(),
+                    authorName: profileData && (profileData.username || profileData.email) || 'Игрок',
+                    authorUsername: profileData && profileData.username || '',
+                    avatarDataUrl: profileData && profileData.avatarDataUrl || '',
+                    text: txt,
+                    rating: isNaN(rating) ? 5 : rating,
+                    createdAt: Date.now(),
+                    createdAtText: 'только что'
+                };
+                const list = getReviews();
+                list.unshift(newReview);
+                setReviews(list);
+                appendReviewCard(newReview);
+                reviewModal.classList.add('hidden');
+            });
+        }
+        
+        // Анимация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            // Добавляем активный класс к главной странице (если элемент существует)
+            var firstNavLink = document.querySelector('.nav-link');
+            if (firstNavLink) firstNavLink.classList.add('active');
+            // Инициализация UI по профилю
+            updateLoginButtonUi();
+            updateAdminUi();
+            hydrateProfileForm();
+            hydrateReviews();
+            switchAuthMode('login');
+            applyTheme(getTheme());
+            ensureOwnerAdmin();
+            ensureLeafEffect();
+            // восстановим переключатели
+            const prof = getProfile();
+            const leafToggle = document.getElementById('leaf-effect-toggle');
+            if (leafToggle && prof) leafToggle.checked = !!prof.leafEffectEnabled;
+            hydrateScreenshots();
+            ensureSnowEffect();
+            ensureStarsEffect();
+            // init more effects & skin position
+            const snowT = document.getElementById('snow-effect-toggle'); if (snowT && prof) snowT.checked = !!prof.snowEffectEnabled;
+            const starsT = document.getElementById('stars-effect-toggle'); if (starsT && prof) starsT.checked = !!prof.starsEffectEnabled;
+            const rainT = document.getElementById('rain-effect-toggle'); if (rainT && prof) rainT.checked = !!prof.rainEffectEnabled;
+            const confT = document.getElementById('confetti-effect-toggle'); if (confT && prof) confT.checked = !!prof.confettiEffectEnabled;
+            const fireT = document.getElementById('fireflies-effect-toggle'); if (fireT && prof) fireT.checked = !!prof.firefliesEffectEnabled;
+            
+            ensureRainEffect(); ensureConfettiEffect(); ensureFirefliesEffect();
+            
+            
+            // Инициализируем статус сервера и периодическое обновление
+            if (typeof fetchServerStatus === 'function') {
+                fetchServerStatus();
+                setInterval(fetchServerStatus, 60000);
+            }
+            
+            // Анимация для карточек привилегий
+            const privilegeCards = document.querySelectorAll('.privilege-card');
+            privilegeCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('pulse');
+                }, 300 * index);
+            });
+        });
+
+        // Подать заявку -> Discord
+        const applyBtn = document.getElementById('apply-btn');
+        if (applyBtn) {
+            applyBtn.addEventListener('click', function() {
+                window.location.href = 'https://discord.gg/C9G6a6tBkF';
+            });
+        }
+
+        // Переключение страниц: добавим проверку профиля при открытии профиля
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                const pageId = this.textContent.trim().toLowerCase();
+                if (pageId === 'профиль') {
+                    ensureProfileViewState();
+                } else if (pageId === 'админ') {
+                    const profile = getProfile();
+                    const isAdmin = profile && profile.role === 'admin';
+                    const guard = document.getElementById('admin-guard');
+                    const content = document.getElementById('admin-content');
+                    if (isAdmin) {
+                        guard && guard.classList.add('hidden');
+                        content && content.classList.remove('hidden');
+                        hydrateAdminUsers();
+                        hydrateAdminReviews();
+                    } else {
+                        content && content.classList.add('hidden');
+                        guard && guard.classList.remove('hidden');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

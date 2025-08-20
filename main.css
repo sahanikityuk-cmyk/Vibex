@@ -1,0 +1,265 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
+
+body {
+	font-family: 'Montserrat', sans-serif;
+	background: linear-gradient(135deg, #1a0b2e 0%, #0f061d 100%);
+	color: #e2e8f0;
+	min-height: 100vh;
+}
+
+.minecraft-font { font-family: 'Roboto Mono', monospace; }
+.glow { text-shadow: 0 0 10px rgba(147, 51, 234, 0.7); }
+.card-glow { box-shadow: 0 0 15px rgba(147, 51, 234, 0.3); }
+.hover-glow:hover { box-shadow: 0 0 20px rgba(236, 72, 153, 0.5); transform: translateY(-5px); }
+.pulse { animation: pulse 2s infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(147, 51, 234, 0); } 100% { box-shadow: 0 0 0 0 rgba(147, 51, 234, 0); } }
+
+.minecraft-button { background: linear-gradient(to bottom, #9333ea, #7c3aed); border: 2px solid #5b21b6; box-shadow: 0 4px 0 #4a1d96; transition: all 0.2s; }
+.minecraft-button:hover { background: linear-gradient(to bottom, #7c3aed, #5b21b6); transform: translateY(2px); box-shadow: 0 2px 0 #4a1d96; }
+.minecraft-button:active { transform: translateY(4px); box-shadow: none; }
+
+.privilege-card { background: linear-gradient(145deg, #1a0b2e, #2d1b4d); border: 1px solid #5b21b6; }
+.review-card { background: rgba(45, 27, 77, 0.6); border-left: 3px solid #ec4899; }
+.profile-avatar { border: 3px solid #f59e0b; box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); }
+
+.nav-link { position: relative; padding: 0.5rem 1rem; }
+.nav-link::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 3px; background: #f59e0b; transition: all 0.3s ease; transform: translateX(-50%); }
+.nav-link:hover::after { width: 80%; }
+.active::after { width: 80% !important; }
+
+.server-status { display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 600; }
+.status-online { background-color: rgba(72, 187, 120, 0.2); color: #34d399; }
+.status-offline { background-color: rgba(239, 68, 68, 0.2); color: #ef4444; }
+.status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 0.5rem; }
+.dot-online { background-color: #34d399; box-shadow: 0 0 10px #34d399; }
+.dot-offline { background-color: #ef4444; box-shadow: 0 0 10px #ef4444; }
+
+.screenshot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
+.screenshot-item { border-radius: 0.5rem; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); transition: all 0.3s ease; }
+.screenshot-item:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4); }
+
+.wiki-card { background: rgba(45, 27, 77, 0.6); border-radius: 0.75rem; transition: all 0.3s ease; }
+.wiki-card:hover { background: rgba(77, 39, 128, 0.7); transform: translateY(-3px); }
+
+/* Светлая тема */
+body.light-mode { background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%); color: #1E293B; transition: all 0.3s ease; }
+body.light-mode .glow { text-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
+body.light-mode .card-glow { box-shadow: 0 0 15px rgba(139, 92, 246, 0.1); }
+body.light-mode .hover-glow:hover { box-shadow: 0 0 20px rgba(236, 72, 153, 0.2); transform: translateY(-5px); }
+body.light-mode .bg-purple-900 { background: #ffffff !important; border-color: #E2E8F0 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+body.light-mode .nav-link { color: #4B5563; }
+body.light-mode .minecraft-button { background: linear-gradient(to bottom, #8B5CF6, #7C3AED); border: 2px solid #6D28D9; box-shadow: 0 4px 0 #5B21B6; color: #fff; }
+body.light-mode .minecraft-button:hover { background: linear-gradient(to bottom, #7C3AED, #6D28D9); color: #fff; }
+body.light-mode .privilege-card { background: #ffffff; border: 1px solid #E2E8F0; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+body.light-mode .review-card { background: #ffffff; border-left: 3px solid #EC4899; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+body.light-mode .wiki-card { background: #ffffff; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+body.light-mode .screenshot-item { background: #ffffff; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+body.light-mode .server-status { background: #ffffff; color: #10B981; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+body.light-mode .status-online { color: #10B981; }
+body.light-mode .status-offline { color: #EF4444; }
+body.light-mode .dot-online { background-color: #10B981; box-shadow: 0 0 10px rgba(16,185,129,0.3); }
+body.light-mode .dot-offline { background-color: #EF4444; box-shadow: 0 0 10px rgba(239,68,68,0.3); }
+body.light-mode #profile-page .bg-purple-800 { background: #ffffff; border: 1px solid #E2E8F0; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+body.light-mode #profile-page .bg-purple-900 { background: #F8FAFC; }
+body.light-mode .modal-content { background: #ffffff; color: #1E293B; }
+body.light-mode .modal-input { background: #F8FAFC; border: 1px solid #E2E8F0; color: #1E293B; }
+body.light-mode footer { background: #ffffff; border-top: 1px solid #E2E8F0; box-shadow: 0 -4px 6px rgba(0,0,0,0.05); }
+body {
+	font-family: 'Montserrat', sans-serif;
+	background: linear-gradient(135deg, #1a0b2e 0%, #0f061d 100%);
+	color: #e2e8f0;
+	min-height: 100vh;
+}
+
+.minecraft-font {
+	font-family: 'Roboto Mono', monospace;
+}
+
+.glow {
+	text-shadow: 0 0 10px rgba(147, 51, 234, 0.7);
+}
+
+.card-glow {
+	box-shadow: 0 0 15px rgba(147, 51, 234, 0.3);
+}
+
+.hover-glow:hover {
+	box-shadow: 0 0 20px rgba(236, 72, 153, 0.5);
+	transform: translateY(-5px);
+}
+
+.pulse {
+	animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+	0% { box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.7); }
+	70% { box-shadow: 0 0 0 10px rgba(147, 51, 234, 0); }
+	100% { box-shadow: 0 0 0 0 rgba(147, 51, 234, 0); }
+}
+
+.minecraft-button {
+	background: linear-gradient(to bottom, #9333ea, #7c3aed);
+	border: 2px solid #5b21b6;
+	box-shadow: 0 4px 0 #4a1d96;
+	transition: all 0.2s;
+}
+
+.minecraft-button:hover {
+	background: linear-gradient(to bottom, #7c3aed, #5b21b6);
+	transform: translateY(2px);
+	box-shadow: 0 2px 0 #4a1d96;
+}
+
+.minecraft-button:active {
+	transform: translateY(4px);
+	box-shadow: none;
+}
+
+.privilege-card {
+	background: linear-gradient(145deg, #1a0b2e, #2d1b4d);
+	border: 1px solid #5b21b6;
+}
+
+.review-card {
+	background: rgba(45, 27, 77, 0.6);
+	border-left: 3px solid #ec4899;
+}
+
+.profile-avatar {
+	border: 3px solid #f59e0b;
+	box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+}
+
+.nav-link {
+	position: relative;
+	padding: 0.5rem 1rem;
+}
+
+.nav-link::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	width: 0;
+	height: 3px;
+	background: #f59e0b;
+	transition: all 0.3s ease;
+	transform: translateX(-50%);
+}
+
+.nav-link:hover::after {
+	width: 80%;
+}
+
+.active::after {
+	width: 80% !important;
+}
+
+.server-status {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.25rem 0.75rem;
+	border-radius: 9999px;
+	font-weight: 600;
+}
+
+.status-online {
+	background-color: rgba(72, 187, 120, 0.2);
+	color: #34d399;
+}
+
+.status-offline {
+	background-color: rgba(239, 68, 68, 0.2);
+	color: #ef4444;
+}
+
+.status-dot {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	margin-right: 0.5rem;
+}
+
+.dot-online {
+	background-color: #34d399;
+	box-shadow: 0 0 10px #34d399;
+}
+
+.dot-offline {
+	background-color: #ef4444;
+	box-shadow: 0 0 10px #ef4444;
+}
+
+.screenshot-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+	gap: 1.5rem;
+}
+
+.screenshot-item {
+	border-radius: 0.5rem;
+	overflow: hidden;
+	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+	transition: all 0.3s ease;
+}
+
+.screenshot-item:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+}
+
+.wiki-card {
+	background: rgba(45, 27, 77, 0.6);
+	border-radius: 0.75rem;
+	transition: all 0.3s ease;
+}
+
+.wiki-card:hover {
+	background: rgba(77, 39, 128, 0.7);
+	transform: translateY(-3px);
+}
+
+/* Светлая тема */
+body.light-mode {
+	background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+	color: #1E293B;
+	transition: all 0.3s ease;
+}
+body.light-mode .glow { text-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
+body.light-mode .card-glow { box-shadow: 0 0 15px rgba(139, 92, 246, 0.1); }
+body.light-mode .hover-glow:hover { box-shadow: 0 0 20px rgba(236, 72, 153, 0.2); transform: translateY(-5px); }
+
+/* Верхняя панель */
+body.light-mode .bg-purple-900 { background: #ffffff !important; border-color: #E2E8F0 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+body.light-mode .nav-link { color: #4B5563; }
+
+/* Кнопки */
+body.light-mode .minecraft-button { background: linear-gradient(to bottom, #8B5CF6, #7C3AED); border: 2px solid #6D28D9; box-shadow: 0 4px 0 #5B21B6; color: #fff; }
+body.light-mode .minecraft-button:hover { background: linear-gradient(to bottom, #7C3AED, #6D28D9); color: #fff; }
+
+/* Карточки/блоки */
+body.light-mode .privilege-card { background: #ffffff; border: 1px solid #E2E8F0; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+body.light-mode .review-card { background: #ffffff; border-left: 3px solid #EC4899; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+body.light-mode .wiki-card { background: #ffffff; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+body.light-mode .screenshot-item { background: #ffffff; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+
+/* Статус сервера */
+body.light-mode .server-status { background: #ffffff; color: #10B981; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+body.light-mode .status-online { color: #10B981; }
+body.light-mode .status-offline { color: #EF4444; }
+body.light-mode .dot-online { background-color: #10B981; box-shadow: 0 0 10px rgba(16,185,129,0.3); }
+body.light-mode .dot-offline { background-color: #EF4444; box-shadow: 0 0 10px rgba(239,68,68,0.3); }
+
+/* Профиль, таблицы, модалки */
+body.light-mode #profile-page .bg-purple-800 { background: #ffffff; border: 1px solid #E2E8F0; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+body.light-mode #profile-page .bg-purple-900 { background: #F8FAFC; }
+body.light-mode .modal-content { background: #ffffff; color: #1E293B; }
+body.light-mode .modal-input { background: #F8FAFC; border: 1px solid #E2E8F0; color: #1E293B; }
+
+/* Футер */
+body.light-mode footer { background: #ffffff; border-top: 1px solid #E2E8F0; box-shadow: 0 -4px 6px rgba(0,0,0,0.05); }
+
+
